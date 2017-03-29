@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="white">#ffffff</color>
+    <color name="deep_sky_blue">#00AEEF</color>
+    <color name="deep_sky_blue_bright">#B300AEEF</color>
+    <color name="reach_black">#030104</color>
+    <color name="black_alpha_50">#80000000</color>
+    <color name="black">#000000</color>
+    <color name="taupe_gray">#878787</color>
+    <color name="harvard_crimson">#D0021B</color>
+    <color name="gainsboro">#dedede</color>
+</resources>
