@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Route My Way</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login_button">Login</string>
 
 </resources>

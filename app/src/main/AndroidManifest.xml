@@ -16,6 +16,9 @@
             android:name="com.bolnizar.code.pages.intro.IntroActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeWithSystemBar">
+
+        </activity>
+        <activity android:name=".pages.intro.applogin.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
