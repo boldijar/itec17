@@ -1,4 +1,4 @@
-package com.bolnizar.code.data.models;
+package com.bolnizar.code.data.model;
 
 public class Question {
 

@@ -3,13 +3,12 @@ package com.bolnizar.code;
 import com.bolnizar.code.di.ApplicationComponent;
 import com.bolnizar.code.di.ApplicationModule;
 import com.bolnizar.code.di.DaggerApplicationComponent;
-
-import android.app.Application;
+import com.orm.SugarApp;
 
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
-public class ShaormApp extends Application {
+public class ShaormApp extends SugarApp {
 
     private ApplicationComponent mApplicationComponent;
 
