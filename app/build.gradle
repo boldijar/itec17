@@ -27,7 +27,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.bolnizar.auto"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -75,4 +75,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:10.2.1'
     compile 'io.nlopez.smartlocation:library:3.3.1'
     compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.mindorks:paracamera:0.2.2'
 }

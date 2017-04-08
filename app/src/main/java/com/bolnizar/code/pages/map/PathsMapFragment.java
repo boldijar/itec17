@@ -4,16 +4,20 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import com.bolnizar.code.R;
+import com.bolnizar.code.data.model.PhotoRecord;
 import com.bolnizar.code.data.model.PositionRecord;
+import com.bolnizar.code.utils.ResourceUtil;
 import com.bolnizar.code.view.fragments.BaseFragment;
+import com.mindorks.paracamera.Camera;
 import com.orm.SugarRecord;
 
 import org.greenrobot.eventbus.EventBus;
@@ -21,6 +25,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -28,21 +33,28 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import timber.log.Timber;
 
-public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback {
+public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private SupportMapFragment mMapFragment;
     private GoogleMap mMap;
     private List<PositionRecord> mLocations = new ArrayList<>();
 
     private Marker mMarker;
+    private Camera mCamera;
+    private BitmapDescriptor mIcon;
 
     @Nullable
     @Override
@@ -55,9 +67,23 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
         ButterKnife.bind(this, view);
+        mIcon = BitmapDescriptorFactory.fromBitmap(ResourceUtil.getBitmap(getContext(), R.drawable.ic_photo_bit));
         mMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.paths_map);
         mMapFragment.getMapAsync(this);
         initLocationUpdate();
+        initCam();
+    }
+
+    private void initCam() {
+        mCamera = new Camera.Builder()
+                .resetToCorrectOrientation(true)// it will rotate the camera bitmap to the correct orientation from meta data
+                .setTakePhotoRequestCode(1)
+                .setDirectory("pics")
+                .setName("ali_" + System.currentTimeMillis())
+                .setImageFormat(Camera.IMAGE_JPEG)
+                .setCompression(50)
+                .setImageHeight(700)// it will try to achieve this height as close as possible maintaining the aspect ratio;
+                .build(this);
     }
 
     @Override
@@ -72,17 +98,42 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
+        map.setOnMarkerClickListener(this);
         mLocations = SugarRecord.listAll(PositionRecord.class);
         drawAll();
+        drawImages();
+    }
+
+    private void drawImages() {
+        List<PhotoRecord> records = SugarRecord.listAll(PhotoRecord.class);
+        for (PhotoRecord record : records) {
+            displayPhotoRecord(record);
+        }
+    }
+
+    private int getColor(float speed) {
+        if (speed < 10) {
+            return Color.YELLOW;
+        }
+        if (speed < 13) {
+            return Color.argb(255, 255, 165, 0);
+        }
+        if (speed < 18) {
+            return Color.RED;
+        }
+        if (speed < 22) {
+            return Color.MAGENTA;
+        }
+        return Color.BLUE;
     }
 
     private void drawLast2() {
         if (mLocations.size() <= 1) {
             return;
         }
-        PolylineOptions polylineOptions = new PolylineOptions().width(10).color(Color.BLUE);
+        PolylineOptions polylineOptions = new PolylineOptions().width(10).color(getColor(mLocations.get(mLocations.size() - 1).speed));
         List<PositionRecord> locations = mLocations.subList(mLocations.size() - 2, mLocations.size());
-        if (distance(locations.get(0).toLatLng(), locations.get(1).toLatLng()) > 100) {
+        if (distance(locations.get(0).toLatLng(), locations.get(1).toLatLng()) > 1000) {
             return;
         }
         for (PositionRecord positionRecord : locations) {
@@ -98,6 +149,48 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
         return result[0];
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_map_photo) {
+            Timber.d("Clicked photo icon");
+            try {
+                mCamera.takePicture();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Camera.REQUEST_TAKE_PHOTO) {
+            Bitmap bitmap = mCamera.getCameraBitmap();
+            if (bitmap != null) {
+                gotPhoto();
+
+            } else {
+                Toast.makeText(this.getContext(), "Picture not taken!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void gotPhoto() {
+        if (mLocations.size() < 1) {
+            return;
+        }
+        PositionRecord positionRecord = mLocations.get(mLocations.size() - 1);
+        PhotoRecord photoRecord = new PhotoRecord(positionRecord.latitude, positionRecord.longitude, mCamera.getCameraBitmapPath());
+        photoRecord.save();
+        displayPhotoRecord(photoRecord);
+    }
+
+    private void displayPhotoRecord(PhotoRecord photoRecord) {
+        MarkerOptions options = new MarkerOptions().position(photoRecord.toLatLng()).title(new Date(photoRecord.time).toString());
+        mMap.addMarker(options).setTag(photoRecord.path);
+    }
+
     private void drawAll() {
         if (mLocations.size() <= 1) {
             return;
@@ -106,9 +199,9 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
         for (PositionRecord positionRecord : mLocations) {
             LatLng newPosition = positionRecord.toLatLng();
             if (lastLatLng != null) {
-                PolylineOptions polylineOptions = new PolylineOptions().width(10).color(Color.BLUE);
+                PolylineOptions polylineOptions = new PolylineOptions().width(10).color(getColor(positionRecord.speed));
                 polylineOptions.add(lastLatLng).add(newPosition);
-                if (distance(lastLatLng, newPosition) < 100) {
+                if (distance(lastLatLng, newPosition) < 1000) {
                     mMap.addPolyline(polylineOptions);
                 }
             }
@@ -122,25 +215,32 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
+    @OnClick(R.id.paths_fab)
+    void fabClick() {
+        if (MyLocationService.mLastLocation == null) {
+            return;
+        }
+        LatLng latLng = new LatLng(MyLocationService.mLastLocation.getLatitude(), MyLocationService.mLastLocation.getLongitude());
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(latLng)
+                .zoom(18)
+                .tilt(3)
+                .build();
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
     private void goToPosition(Location location) {
         if (mMap == null) {
             return;
         }
         PositionRecord positionRecord = PositionRecord.newPosition(location.getLatitude(), location.getLongitude(), location.getSpeed());
         positionRecord.save();
+        Timber.d("SPEED " + positionRecord.speed);
         mLocations.add(positionRecord);
 
-        LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-        if (!bounds.contains(positionRecord.toLatLng()) || mMap.getCameraPosition().zoom < 10) {
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(positionRecord.toLatLng())
-                    .zoom(18)
-                    .tilt(3)
-                    .build();
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        }
         if (mMarker == null) {
-            MarkerOptions markerOptions = new MarkerOptions().title("Current position").position(positionRecord.toLatLng());
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(ResourceUtil.getBitmap(getContext(), R.drawable.ic_location));
+            MarkerOptions markerOptions = new MarkerOptions().title("Current position").position(positionRecord.toLatLng()).icon(icon);
             mMarker = mMap.addMarker(markerOptions);
         }
         mMarker.setPosition(positionRecord.toLatLng());
@@ -167,4 +267,9 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
         goToPosition(event);
     }
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        ImageFragment.newInstance(marker.getTag().toString()).show(getChildFragmentManager(), "TAGA");
+        return true;
+    }
 }
