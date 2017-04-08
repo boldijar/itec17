@@ -36,7 +36,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MapActivity extends BaseFragmentActivity {
+public class MapActivity extends BaseFragmentActivity implements AppMapView {
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -63,6 +63,8 @@ public class MapActivity extends BaseFragmentActivity {
         initDrawer();
         switchFragment(new PathsMapFragment());
         initFb();
+        mMapPresenter.init(this, this);
+
     }
 
     private void initFb() {
@@ -117,11 +119,6 @@ public class MapActivity extends BaseFragmentActivity {
         mLoginText.setText(R.string.login_with_facebook);
         mImage.setImageResource(R.drawable.user);
         mImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
-    }
-
-    @OnClick(R.id.map_sync)
-    void sync() {
-        mMapPresenter.sync(this);
     }
 
     @OnClick(R.id.map_login)
@@ -199,6 +196,12 @@ public class MapActivity extends BaseFragmentActivity {
             return;
         }
         switchFragment(new GalleryFragment());
+    }
+
+    @Override
+    protected void onDestroy() {
+        mMapPresenter.destroy();
+        super.onDestroy();
     }
 
     protected Fragment getTopFragment() {
