@@ -34,7 +34,7 @@ public class MapActivity extends BaseFragmentActivity {
         setSupportActionBar(mToolbar);
         startService(new Intent(this, MyLocationService.class));
         initDrawer();
-        switchFragment(new StatisticsFragment());
+        switchFragment(new PathsMapFragment());
     }
 
     private void initDrawer() {
@@ -75,6 +75,16 @@ public class MapActivity extends BaseFragmentActivity {
             return;
         }
         switchFragment(new PathsMapFragment());
+    }
+
+    @OnClick(R.id.map_stats)
+    void statsClicked() {
+        mDrawerLayout.closeDrawer(Gravity.START);
+        Fragment currentFragment = getTopFragment();
+        if (currentFragment instanceof StatisticsFragment) {
+            return;
+        }
+        switchFragment(new StatisticsFragment());
     }
 
     protected Fragment getTopFragment() {
