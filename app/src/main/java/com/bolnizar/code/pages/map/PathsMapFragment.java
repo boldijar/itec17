@@ -54,7 +54,6 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
 
     private Marker mMarker;
     private Camera mCamera;
-    private BitmapDescriptor mIcon;
 
     @Nullable
     @Override
@@ -67,7 +66,6 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
         ButterKnife.bind(this, view);
-        mIcon = BitmapDescriptorFactory.fromBitmap(ResourceUtil.getBitmap(getContext(), R.drawable.ic_photo_bit));
         mMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.paths_map);
         mMapFragment.getMapAsync(this);
         initCam();
