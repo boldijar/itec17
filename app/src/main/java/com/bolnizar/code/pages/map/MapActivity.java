@@ -3,15 +3,19 @@ package com.bolnizar.code.pages.map;
 import com.bolnizar.code.R;
 import com.bolnizar.code.view.activities.BaseFragmentActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.MenuItem;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MapActivity extends BaseFragmentActivity {
 
@@ -27,7 +31,7 @@ public class MapActivity extends BaseFragmentActivity {
         setContentView(R.layout.activity_map);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
-
+        startService(new Intent(this, MyLocationService.class));
         initDrawer();
         switchFragment(new PathsMapFragment());
     }
@@ -60,6 +64,20 @@ public class MapActivity extends BaseFragmentActivity {
         // Handle your other action bar items...
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.map_home)
+    void homeClicked() {
+        mDrawerLayout.closeDrawer(Gravity.START);
+        Fragment currentFragment = getTopFragment();
+        if (currentFragment instanceof PathsMapFragment) {
+            return;
+        }
+        switchFragment(new PathsMapFragment());
+    }
+
+    protected Fragment getTopFragment() {
+        return getSupportFragmentManager().findFragmentById(getContainerId());
     }
 
     @Override

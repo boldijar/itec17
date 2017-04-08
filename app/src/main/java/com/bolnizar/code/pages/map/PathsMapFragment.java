@@ -70,7 +70,6 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
         mIcon = BitmapDescriptorFactory.fromBitmap(ResourceUtil.getBitmap(getContext(), R.drawable.ic_photo_bit));
         mMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.paths_map);
         mMapFragment.getMapAsync(this);
-        initLocationUpdate();
         initCam();
     }
 
@@ -91,10 +90,6 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
         inflater.inflate(R.menu.menu_paths_map, menu);
     }
 
-    private void initLocationUpdate() {
-        getContext().startService(new Intent(getContext(), MyLocationService.class));
-    }
-
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
@@ -102,6 +97,12 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
         mLocations = SugarRecord.listAll(PositionRecord.class);
         drawAll();
         drawImages();
+
+        if (mLocations.size() > 0) {
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(ResourceUtil.getBitmap(getContext(), R.drawable.ic_location));
+            MarkerOptions markerOptions = new MarkerOptions().title("Current position").position(mLocations.get(mLocations.size() - 1).toLatLng()).icon(icon);
+            mMarker = mMap.addMarker(markerOptions);
+        }
     }
 
     private void drawImages() {
@@ -217,10 +218,10 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
 
     @OnClick(R.id.paths_fab)
     void fabClick() {
-        if (MyLocationService.mLastLocation == null) {
+        if (mLocations.size() == 0) {
             return;
         }
-        LatLng latLng = new LatLng(MyLocationService.mLastLocation.getLatitude(), MyLocationService.mLastLocation.getLongitude());
+        LatLng latLng = mLocations.get(mLocations.size() - 1).toLatLng();
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(latLng)
                 .zoom(18)
@@ -237,7 +238,6 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
         positionRecord.save();
         Timber.d("SPEED " + positionRecord.speed);
         mLocations.add(positionRecord);
-
         if (mMarker == null) {
             BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(ResourceUtil.getBitmap(getContext(), R.drawable.ic_location));
             MarkerOptions markerOptions = new MarkerOptions().title("Current position").position(positionRecord.toLatLng()).icon(icon);
@@ -269,6 +269,9 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        if (marker.getTag() == null) {
+            return true;
+        }
         ImageFragment.newInstance(marker.getTag().toString()).show(getChildFragmentManager(), "TAGA");
         return true;
     }
