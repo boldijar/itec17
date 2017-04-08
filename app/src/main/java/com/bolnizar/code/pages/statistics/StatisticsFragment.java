@@ -4,8 +4,8 @@ import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +17,10 @@ import com.bolnizar.code.data.model.PositionRecord;
 import com.bolnizar.code.view.fragments.BaseFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,18 +43,25 @@ public class StatisticsFragment extends BaseFragment {
     TextView avgLabel;
     @BindView(R.id.max_speed_label)
     TextView maxLabel;
-    ArrayList<String> hours = new ArrayList<>();
     @BindView(R.id.meters_walked_label)
     TextView distanceLabel;
+
+
     int maximumWalked = 0;
+    ArrayList<String> hours = new ArrayList<>();
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-        //generateLocations();
         initChart();
         initPieChart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle("Your stats");
     }
 
     @Nullable
@@ -66,26 +71,18 @@ public class StatisticsFragment extends BaseFragment {
     }
 
     private void initChart() {
+
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, -24);
         long check = calendar.getTimeInMillis();
         long totalDistance = 0;
         float totalSpeed = 0;
         float maxSpeed = 0;
+        maximumWalked = 0;
 
-        List<PositionRecord> results = PositionRecord.find(PositionRecord.class
-                , "time >= ?"
-                , String.valueOf(check));
+        ArrayList<PositionRecord> results = StatisticsService.getDailyStats(check);
+        int resultsNumber = results.size();
 
-        Collections.sort(results, (o1, o2) -> {
-            if (o1.time == o2.time) {
-                return 0;
-            } else if (o1.time > o2.time) {
-                return -1;
-            } else {
-                return 1;
-            }
-        });
 
         Calendar calendar1 = Calendar.getInstance();
         HashMap<Integer, LatLng> activity = new HashMap<>();
@@ -99,15 +96,15 @@ public class StatisticsFragment extends BaseFragment {
 
         for (PositionRecord positionRecord : results) {
             calendar1.setTimeInMillis(positionRecord.time);
-
             int hour = calendar1.get(Calendar.HOUR);
 
             if (activity.containsKey(hour)) {
                 Integer distance = (int) distance(activity.get(hour), positionRecord.toLatLng());
-                activityPerHour.put(hour, distance);
+                activityPerHour.put(hour, activityPerHour.get(hour) + distance);
                 Log.i("HOUR: ", String.valueOf(hour) + " " + distance);
-                if(distance > maximumWalked){
-                    maximumWalked = (int)distance;
+
+                if (distance > maximumWalked) {
+                    maximumWalked = distance;
                 }
                 totalDistance += distance;
                 totalSpeed += positionRecord.speed;
@@ -115,33 +112,62 @@ public class StatisticsFragment extends BaseFragment {
                     maxSpeed = positionRecord.speed;
                 }
             }
-            Log.i("SPEED AVG: ", "" + totalSpeed / (float)activity.size());
+            Log.i("SPEED AVG: ", "" + totalSpeed / (float) activity.size());
             Log.i("MAX SPEED: ", "" + maxSpeed);
+            Log.i("MAX WALKED: ", "" + maximumWalked);
 
-            initLabels(totalSpeed / activity.size(), maxSpeed);
+
             activity.put(hour, positionRecord.toLatLng());
         }
 
-
+        initLabels(totalSpeed / resultsNumber, maxSpeed);
         barView.setBottomTextList(hours);
-        barView.setDataList(new ArrayList<Integer>(activityPerHour.values()), maximumWalked);
-        distanceLabel.setText("You walked " + String.valueOf(totalDistance) + " meters today!");
+        barView.setDataList(new ArrayList<>(activityPerHour.values()), maximumWalked);
+        distanceLabel.setText("You traveled " + String.valueOf(totalDistance) + " meters today!");
 
     }
 
     private void initPieChart() {
-        PieHelper pieHelper = new PieHelper(24.5f, Color.GREEN);
-        PieHelper pieHelper2 = new PieHelper(50.5f, Color.RED);
-        PieHelper pieHelper3 = new PieHelper(15.5f, Color.BLUE);
+        ArrayList<PositionRecord> results = StatisticsService.getAllStats();
+        Float nrOfResults = (float) results.size();
+        ArrayList<Integer> colors = new ArrayList<Integer>() {{
+            add(R.color.deep_sky_blue);
+            add(R.color.red);
+            add(R.color.yellow);
+            add(R.color.gainsboro);
+            add(R.color.colorAccent);
+            add(R.color.orange);
+            add(R.color.harvard_crimson);
+        }};
+        HashMap<Integer, Integer> percentFreq = new HashMap<>();
+        Calendar calendar = Calendar.getInstance();
+        for (PositionRecord record : results) {
+            calendar.setTimeInMillis(record.time);
+            Integer weekDay = calendar.get(Calendar.DAY_OF_WEEK);
+            if (percentFreq.containsKey(weekDay)) {
+                percentFreq.put(weekDay, percentFreq.get(weekDay) + 1);
+            } else {
+                percentFreq.put(weekDay, 1);
+            }
+        }
 
         ArrayList<PieHelper> pieHelperArrayList = new ArrayList<>();
-        pieHelperArrayList.add(pieHelper);
-        pieHelperArrayList.add(pieHelper2);
-        pieHelperArrayList.add(pieHelper3);
+
+        for (int i = 1; i < 8; i++) {
+            PieHelper pieHelper;
+            if (percentFreq.containsKey(i)) {
+
+                float percent = (percentFreq.get(i) / nrOfResults) * 100;
+                Log.i("PERCENT FOR " + i, " " + percent);
+                pieHelper = new PieHelper(percent
+                       , ContextCompat.getColor(getContext(), colors.get(i-1)));
+                pieHelperArrayList.add(pieHelper);
+            }
+        }
 
         mPieView.setDate(pieHelperArrayList);
-        mPieView.selectedPie(2); //optional
         mPieView.showPercentLabel(true); //optional
+
     }
 
     private void initLabels(float avg, float max) {
@@ -174,23 +200,5 @@ public class StatisticsFragment extends BaseFragment {
         return result[0];
     }
 
-    private void generateLocations() {
-        Random random = new Random();
-        Calendar calendar = Calendar.getInstance();
-        double longitude = 45.741d;
-        double latitude = 21.237d;
-        for (int i = 0; i < 100; i++) {
-            float speed =(float) Math.abs(random.nextInt()) % 120;
-            calendar.add(Calendar.HOUR, random.nextInt() % 24);
-            Log.i("GENERATED HOUR: ", String.valueOf(calendar.getTimeInMillis()));
-            longitude += random.nextDouble();
-            latitude += random.nextDouble();
-            PositionRecord positionRecord = PositionRecord.newPositionWithTime(latitude
-                    , longitude
-                    , speed
-                    , calendar.getTimeInMillis());
-            positionRecord.save();
-        }
-    }
 
 }
