@@ -1,11 +1,11 @@
 package com.bolnizar.code.data.prefs;
 
+import com.bolnizar.code.R;
+import com.bolnizar.code.ShaormApp;
+import com.bolnizar.code.di.scopes.ApplicationScope;
+
 import android.content.Context;
 import android.content.SharedPreferences;
-
-import com.bolnizar.code.ShaormApp;
-import com.bolnizar.code.R;
-import com.bolnizar.code.di.scopes.ApplicationScope;
 
 import javax.inject.Named;
 
@@ -27,5 +27,12 @@ public class AppPrefsModule {
     @Named(AppPrefsConstants.USER_TOKEN)
     StringPreference provideLoginToken(@AppPrefs SharedPreferences sharedPreferences) {
         return new StringPreference(sharedPreferences, AppPrefsConstants.USER_TOKEN);
+    }
+
+    @Provides
+    @ApplicationScope
+    @Named(AppPrefsConstants.FACEBOOK_ID)
+    StringPreference provideFbId(@AppPrefs SharedPreferences sharedPreferences) {
+        return new StringPreference(sharedPreferences, AppPrefsConstants.FACEBOOK_ID);
     }
 }

@@ -10,4 +10,6 @@
     <string name="open">Open</string>
     <string name="gallery">Gallery</string>
     <string name="yourway">Your way</string>
+    <string name="logincancel">Login was canceled</string>
+    <string name="fb_logout">Log out</string>
 </resources>

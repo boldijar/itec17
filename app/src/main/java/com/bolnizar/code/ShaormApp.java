@@ -3,6 +3,7 @@ package com.bolnizar.code;
 import com.bolnizar.code.di.ApplicationComponent;
 import com.bolnizar.code.di.ApplicationModule;
 import com.bolnizar.code.di.DaggerApplicationComponent;
+import com.facebook.FacebookSdk;
 import com.orm.SugarApp;
 
 import timber.log.Timber;

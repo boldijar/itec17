@@ -9,7 +9,7 @@ public final class InjectionHelper {
 
 //    private static LoginComponent sLoginComponent;
 
-    private static ApplicationComponent getApplicationComponent(Context context) {
+    public static ApplicationComponent getApplicationComponent(Context context) {
         return ((ShaormApp) context.getApplicationContext()).getApplicationComponent();
     }
 
