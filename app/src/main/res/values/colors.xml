@@ -12,4 +12,6 @@
     <color name="taupe_gray">#878787</color>
     <color name="harvard_crimson">#D0021B</color>
     <color name="gainsboro">#dedede</color>
+    <color name="yellow">#FDD835</color>
+    <color name="orange">#FF9800</color>
 </resources>

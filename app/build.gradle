@@ -77,4 +77,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:10.2.1'
     compile 'io.nlopez.smartlocation:library:3.3.1'
     compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.mindorks:paracamera:0.2.2'
 }
