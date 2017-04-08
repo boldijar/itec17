@@ -11,6 +11,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
@@ -62,7 +63,9 @@ public class MapActivity extends BaseFragmentActivity {
     private void initFb() {
         if (AccessToken.getCurrentAccessToken() != null) {
             mLoginText.setText(R.string.fb_logout);
-            Glide.with(this).load("http://graph.facebook.com/" + Profile.getCurrentProfile().getId() + "/picture?type=large").into(mImage);
+            if (Profile.getCurrentProfile() != null) {
+                Glide.with(this).load("http://graph.facebook.com/" + Profile.getCurrentProfile().getId() + "/picture?width=9999").into(mImage);
+            }
         } else {
             mLoginText.setText(R.string.login_with_facebook);
         }
@@ -88,7 +91,15 @@ public class MapActivity extends BaseFragmentActivity {
     }
 
     private void loggedIn(LoginResult loginResult) {
-        Glide.with(this).load("http://graph.facebook.com/" + Profile.getCurrentProfile().getId() + "/picture?type=square").into(mImage);
+        ProfileTracker profileTracker = new ProfileTracker() {
+            @Override
+            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                this.stopTracking();
+                Profile.setCurrentProfile(currentProfile);
+                Glide.with(MapActivity.this).load("http://graph.facebook.com/" + Profile.getCurrentProfile().getId() + "/picture?width=9999").into(mImage);
+            }
+        };
+        profileTracker.startTracking();
         mLoginText.setText(R.string.fb_logout);
     }
 
