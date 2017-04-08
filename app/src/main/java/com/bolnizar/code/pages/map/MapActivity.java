@@ -1,6 +1,7 @@
 package com.bolnizar.code.pages.map;
 
 import com.bolnizar.code.R;
+import com.bolnizar.code.pages.gallery.GalleryFragment;
 import com.bolnizar.code.view.activities.BaseFragmentActivity;
 
 import android.content.Intent;
@@ -74,6 +75,16 @@ public class MapActivity extends BaseFragmentActivity {
             return;
         }
         switchFragment(new PathsMapFragment());
+    }
+
+    @OnClick(R.id.map_gallery)
+    void galleryClicked() {
+        mDrawerLayout.closeDrawer(Gravity.START);
+        Fragment currentFragment = getTopFragment();
+        if (currentFragment instanceof GalleryFragment) {
+            return;
+        }
+        switchFragment(new GalleryFragment());
     }
 
     protected Fragment getTopFragment() {

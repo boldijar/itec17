@@ -27,10 +27,17 @@
         android:id="@+id/left_drawer"
         android:layout_width="300dp"
         android:layout_height="match_parent"
-        android:background="#111"
         android:layout_gravity="start"
-        android:orientation="vertical"
-        android:paddingTop="50dp">
+        android:background="#111"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="32dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/user" />
 
         <TextView
             android:id="@+id/map_home"

@@ -14,4 +14,6 @@
     <color name="gainsboro">#dedede</color>
     <color name="yellow">#FDD835</color>
     <color name="orange">#FF9800</color>
+    <color name="red">#F44336</color>
+    <color name="red_dark">#B71C1C</color>
 </resources>

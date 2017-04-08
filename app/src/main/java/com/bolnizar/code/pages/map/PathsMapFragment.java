@@ -26,10 +26,10 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -112,18 +112,15 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
 
     private int getColor(float speed) {
         if (speed < 10) {
-            return Color.YELLOW;
+            return ContextCompat.getColor(getContext(), R.color.yellow);
         }
         if (speed < 13) {
-            return Color.argb(255, 255, 165, 0);
+            return ContextCompat.getColor(getContext(), R.color.orange);
         }
         if (speed < 18) {
-            return Color.RED;
+            return ContextCompat.getColor(getContext(), R.color.red);
         }
-        if (speed < 22) {
-            return Color.MAGENTA;
-        }
-        return Color.BLUE;
+        return ContextCompat.getColor(getContext(), R.color.red_dark);
     }
 
     private void drawLast2() {
