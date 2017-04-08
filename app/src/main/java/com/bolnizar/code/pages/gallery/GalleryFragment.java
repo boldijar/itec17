@@ -1,6 +1,7 @@
 package com.bolnizar.code.pages.gallery;
 
 import com.bolnizar.code.R;
+import com.bolnizar.code.data.model.PhotoRecord;
 import com.bolnizar.code.pages.map.ImageFragment;
 import com.bolnizar.code.view.fragments.BaseFragment;
 
@@ -81,5 +82,12 @@ public class GalleryFragment extends BaseFragment implements GalleryAdapter.Gall
     @Override
     public void onOpenImage(String path) {
         ImageFragment.newInstance(path).show(getChildFragmentManager(), "aleaalea");
+    }
+
+    @Override
+    public void onNavigate(PhotoRecord record) {
+        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                Uri.parse("http://maps.google.com/maps?daddr=" + record.latitude + "," + record.longitude));
+        startActivity(intent);
     }
 }

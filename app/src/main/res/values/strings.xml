@@ -13,4 +13,5 @@
     <string name="logincancel">Login was canceled</string>
     <string name="fb_logout">Log out</string>
     <string name="forcesync">Force sync</string>
+    <string name="directions">Directions</string>
 </resources>

@@ -37,19 +37,22 @@ class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.Holder> {
         PhotoRecord photoRecord = mItems.get(position);
         Glide.with(holder.image.getContext()).load(photoRecord.path).into(holder.image);
         holder.itemView.setOnClickListener(v -> {
-            clickedItem(v, photoRecord.path);
+            clickedItem(v, photoRecord);
         });
     }
 
-    private void clickedItem(View v, String path) {
+    private void clickedItem(View v, PhotoRecord record) {
         PopupMenu menu = new PopupMenu(v.getContext(), v);
         menu.inflate(R.menu.menu_gallery_options);
         menu.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_share) {
-                mListener.onShareImage(path);
+                mListener.onShareImage(record.path);
             }
             if (item.getItemId() == R.id.action_open) {
-                mListener.onOpenImage(path);
+                mListener.onOpenImage(record.path);
+            }
+            if (item.getItemId()==R.id.action_directions){
+                mListener.onNavigate(record);
             }
             return true;
         });
@@ -77,5 +80,7 @@ class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.Holder> {
         void onShareImage(String path);
 
         void onOpenImage(String path);
+
+        void onNavigate(PhotoRecord record);
     }
 }

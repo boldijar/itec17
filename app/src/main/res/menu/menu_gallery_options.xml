@@ -9,4 +9,8 @@
         android:id="@+id/action_open"
         android:title="@string/open"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_directions"
+        android:title="@string/directions"
+        app:showAsAction="ifRoom" />
 </menu>
