@@ -29,11 +29,11 @@
                     android:text="Your average speed: "/>
 
                 <TextView
+                    android:id="@+id/avg_speed_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="0km/h"
-                    android:id="@+id/avg_speed_label"
                     android:textAlignment="center"
                     android:textSize="25sp"/>
             </LinearLayout>
@@ -50,12 +50,12 @@
                     android:text="Your maximum speed: "/>
 
                 <TextView
+                    android:id="@+id/max_speed_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0km/h"
-                    android:id="@+id/max_speed_label"
-                    android:textAlignment="center"
                     android:layout_gravity="center"
+                    android:text="0km/h"
+                    android:textAlignment="center"
                     android:textSize="25sp"/>
 
             </LinearLayout>
@@ -70,9 +70,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/today_s_highlight"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"/>
+                android:layout_margin="16dp"
+                android:text="@string/today_s_highlight"/>
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -86,8 +85,8 @@
                     class="im.dacer.androidcharts.BarView"
                     android:layout_width="wrap_content"
                     android:layout_height="300dp"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginTop="16dp"/>
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="20dp"/>
 
             </HorizontalScrollView>
 
@@ -95,9 +94,8 @@
                 android:id="@+id/meters_walked_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
                 android:layout_gravity="bottom"
+                android:layout_margin="16dp"
                 android:text="@string/you_walked_2500_meters"
                 android:textAlignment="center"/>
         </android.support.v7.widget.CardView>
@@ -107,12 +105,190 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp">
 
-            <view
-                android:id="@+id/pie_view"
-                class="im.dacer.androidcharts.PieView"
-                android:layout_width="300dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"/>
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="These is your weekly activity"
+                    android:layout_margin="16dp"/>
+
+                <view
+                    android:id="@+id/pie_view"
+                    class="im.dacer.androidcharts.PieView"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="20dp"/>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|left"
+                        android:layout_marginBottom="24dp"
+                        android:layout_marginLeft="10dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@color/red"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:text="Monday"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="12sp"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@color/yellow"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:text="Tuesday"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="12sp"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@color/gainsboro"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:text="Wednesday"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="12sp"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@color/colorAccent"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:text="Thurdsay"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="12sp"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@color/orange"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:text="Friday"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="12sp"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@color/harvard_crimson"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:text="Saturday"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="12sp"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@color/deep_sky_blue_bright"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:text="Sunday"
+                                android:textAllCaps="true"
+                                android:textColor="@color/black"
+                                android:textSize="12sp"/>
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                </FrameLayout>
+
+            </LinearLayout>
 
         </android.support.v7.widget.CardView>
     </LinearLayout>
