@@ -30,6 +30,8 @@ import android.widget.Toast;
 
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -46,6 +48,9 @@ public class MapActivity extends BaseFragmentActivity {
     ImageView mImage;
     private ActionBarDrawerToggle mDrawerToggle;
     private CallbackManager mCallbackManager;
+
+    @Inject
+    MapPresenter mMapPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,10 +69,13 @@ public class MapActivity extends BaseFragmentActivity {
         if (AccessToken.getCurrentAccessToken() != null) {
             mLoginText.setText(R.string.fb_logout);
             if (Profile.getCurrentProfile() != null) {
+                mImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 Glide.with(this).load("http://graph.facebook.com/" + Profile.getCurrentProfile().getId() + "/picture?width=9999").into(mImage);
             }
         } else {
             mLoginText.setText(R.string.login_with_facebook);
+            mImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            mImage.setImageResource(R.drawable.user);
         }
         mCallbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(mCallbackManager,
@@ -96,6 +104,7 @@ public class MapActivity extends BaseFragmentActivity {
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                 this.stopTracking();
                 Profile.setCurrentProfile(currentProfile);
+                mImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 Glide.with(MapActivity.this).load("http://graph.facebook.com/" + Profile.getCurrentProfile().getId() + "/picture?width=9999").into(mImage);
             }
         };
@@ -107,6 +116,12 @@ public class MapActivity extends BaseFragmentActivity {
         LoginManager.getInstance().logOut();
         mLoginText.setText(R.string.login_with_facebook);
         mImage.setImageResource(R.drawable.user);
+        mImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+    }
+
+    @OnClick(R.id.map_sync)
+    void sync() {
+        mMapPresenter.sync(this);
     }
 
     @OnClick(R.id.map_login)

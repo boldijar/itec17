@@ -9,10 +9,5 @@ public class BaseResponse {
     @SerializedName("success")
     public boolean success;
 
-    @SerializedName("message")
-    public String message;
-
-    @SerializedName("errors")
-    public HashMap<String, String[]> errors;
 
 }

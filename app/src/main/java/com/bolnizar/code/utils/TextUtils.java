@@ -2,9 +2,6 @@ package com.bolnizar.code.utils;
 
 import android.util.Patterns;
 
-import com.bolnizar.code.data.api.responses.BaseResponse;
-
-import java.util.Set;
 import java.util.regex.Pattern;
 
 public class TextUtils {
@@ -27,19 +24,5 @@ public class TextUtils {
             return true;
         }
         return !getUsernamePattern().matcher(username).matches();
-    }
-
-    public static String extractFirstError(BaseResponse baseResponse) {
-        if (baseResponse == null || baseResponse.errors == null || baseResponse.errors.size() == 0) {
-            return null;
-        }
-        Set<String> keys = baseResponse.errors.keySet();
-        for (String key : keys) {
-            String[] errors = baseResponse.errors.get(key);
-            if (errors != null && errors.length > 0) {
-                return errors[0];
-            }
-        }
-        return null;
     }
 }
