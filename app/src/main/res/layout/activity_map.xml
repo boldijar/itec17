@@ -38,6 +38,7 @@
             android:layout_gravity="center"
             android:layout_marginBottom="32dp"
             android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
             android:src="@drawable/user" />
 
         <TextView
