@@ -30,7 +30,7 @@ public class MapActivity extends BaseFragmentActivity {
         setSupportActionBar(mToolbar);
 
         initDrawer();
-        switchFragment(new StatisticsFragment());
+        switchFragment(new PathsMapFragment());
     }
 
     private void initDrawer() {

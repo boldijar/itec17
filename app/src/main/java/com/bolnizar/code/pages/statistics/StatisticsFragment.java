@@ -53,8 +53,8 @@ public class StatisticsFragment extends BaseFragment{
 
     }
 
-    public void setActivityPerHourChart(ArrayList<PositionRecord> values){
-        
-    }
+  
+
+
 
 }
