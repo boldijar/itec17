@@ -4,7 +4,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -21,18 +20,11 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.widget.AppCompatDrawableManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -130,20 +122,6 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
-    public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
-        Drawable drawable = AppCompatDrawableManager.get().getDrawable(context, drawableId);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            drawable = (DrawableCompat.wrap(drawable)).mutate();
-        }
-
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
-    }
     private void goToPosition(Location location) {
         if (mMap == null) {
             return;
@@ -162,7 +140,7 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
         if (mMarker == null) {
-            MarkerOptions markerOptions = new MarkerOptions().title("Current position").icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location)).position(positionRecord.toLatLng());
+            MarkerOptions markerOptions = new MarkerOptions().title("Current position").position(positionRecord.toLatLng());
             mMarker = mMap.addMarker(markerOptions);
         }
         mMarker.setPosition(positionRecord.toLatLng());
