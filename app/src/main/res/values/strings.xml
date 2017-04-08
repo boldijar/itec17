@@ -4,5 +4,10 @@
     <string name="today_s_highlight">Today`s highlight</string>
     <string name="you_walked_2500_meters">You walked 2500 meters!</string>
     <string name="login_with_facebook">Login with facebook</string>
-
+    <string name="facebook_app_id">241963126142655</string>
+    <string name="switch_type">Switch type</string>
+    <string name="share">Share</string>
+    <string name="open">Open</string>
+    <string name="gallery">Gallery</string>
+    <string name="yourway">Your way</string>
 </resources>

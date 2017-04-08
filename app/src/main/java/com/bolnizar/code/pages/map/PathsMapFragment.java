@@ -62,6 +62,12 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle(getString(R.string.yourway));
+    }
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
