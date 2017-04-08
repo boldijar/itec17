@@ -7,14 +7,18 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import com.bolnizar.code.R;
+import com.bolnizar.code.data.model.LocationItem;
 import com.bolnizar.code.data.model.PhotoRecord;
 import com.bolnizar.code.data.model.PositionRecord;
+import com.bolnizar.code.di.InjectionHelper;
 import com.bolnizar.code.utils.ResourceUtil;
 import com.bolnizar.code.view.fragments.BaseFragment;
 import com.mindorks.paracamera.Camera;
@@ -42,11 +46,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import timber.log.Timber;
 
-public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, PathsMapView {
 
     private SupportMapFragment mMapFragment;
     private GoogleMap mMap;
@@ -55,10 +61,24 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
     private Marker mMarker;
     private Camera mCamera;
 
+    private List<Circle> mCircles = new ArrayList<>();
+    @Inject
+    PathsMapPresenter mPresenter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_paths_map, container, false);
+    }
+
+    private void addCircle(LatLng position) {
+        double radiusInMeters = 100.0;
+        int strokeColor = 0xffff0000; //red outline
+        int shadeColor = 0x44ff0000; //opaque red fill
+
+        CircleOptions circleOptions = new CircleOptions().center(position).radius(radiusInMeters).fillColor(shadeColor).strokeColor(strokeColor).strokeWidth(8);
+        mCircles.add(mMap.addCircle(circleOptions));
+        Timber.d("added hotspot on " + position);
     }
 
     @Override
@@ -72,9 +92,11 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
         ButterKnife.bind(this, view);
+        InjectionHelper.getApplicationComponent(getContext()).inject(this);
         mMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.paths_map);
         mMapFragment.getMapAsync(this);
         initCam();
+        mPresenter.init(this);
     }
 
     private void initCam() {
@@ -107,6 +129,7 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
             MarkerOptions markerOptions = new MarkerOptions().title("Current position").position(mLocations.get(mLocations.size() - 1).toLatLng()).icon(icon);
             mMarker = mMap.addMarker(markerOptions);
         }
+        mPresenter.load();
     }
 
     private void drawImages() {
@@ -225,7 +248,7 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
         LatLng latLng = mLocations.get(mLocations.size() - 1).toLatLng();
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(latLng)
-                .zoom(18)
+                .zoom(13)
                 .tilt(3)
                 .build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -275,5 +298,22 @@ public class PathsMapFragment extends BaseFragment implements OnMapReadyCallback
         }
         ImageFragment.newInstance(marker.getTag().toString()).show(getChildFragmentManager(), "TAGA");
         return true;
+    }
+
+    @Override
+    public void onDestroyView() {
+        mPresenter.destroy();
+        super.onDestroyView();
+    }
+
+    @Override
+    public void gotHotspots(List<LocationItem> items) {
+        for (Circle circle : mCircles) {
+            circle.remove();
+        }
+        mCircles.clear();
+        for (LocationItem item : items) {
+            addCircle(new LatLng(item.latitude, item.longitude));
+        }
     }
 }
