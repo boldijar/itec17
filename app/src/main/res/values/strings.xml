@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Route My Way</string>
     <string name="filter">Filter</string>
+    <string name="today_s_highlight">Today`s highlight</string>
+    <string name="you_walked_2500_meters">You walked 2500 meters!</string>
     <string name="login_with_facebook">Login with facebook</string>
 
 </resources>

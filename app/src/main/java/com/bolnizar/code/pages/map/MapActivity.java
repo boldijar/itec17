@@ -1,6 +1,7 @@
 package com.bolnizar.code.pages.map;
 
 import com.bolnizar.code.R;
+import com.bolnizar.code.pages.statistics.StatisticsFragment;
 import com.bolnizar.code.pages.gallery.GalleryFragment;
 import com.bolnizar.code.view.activities.BaseFragmentActivity;
 
@@ -75,6 +76,16 @@ public class MapActivity extends BaseFragmentActivity {
             return;
         }
         switchFragment(new PathsMapFragment());
+    }
+
+    @OnClick(R.id.map_stats)
+    void statsClicked() {
+        mDrawerLayout.closeDrawer(Gravity.START);
+        Fragment currentFragment = getTopFragment();
+        if (currentFragment instanceof StatisticsFragment) {
+            return;
+        }
+        switchFragment(new StatisticsFragment());
     }
 
     @OnClick(R.id.map_gallery)
