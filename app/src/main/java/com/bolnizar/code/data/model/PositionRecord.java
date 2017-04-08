@@ -23,4 +23,17 @@ public class PositionRecord extends SugarRecord {
     public LatLng toLatLng() {
         return new LatLng(latitude, longitude);
     }
+
+    public static PositionRecord newPositionWithTime(double latitude, double longitude
+            , float speed, long time) {
+        PositionRecord positionRecord = new PositionRecord();
+        positionRecord.time = time;
+        positionRecord.longitude = longitude;
+        positionRecord.latitude = latitude;
+        positionRecord.speed = speed;
+        return positionRecord;
+    }
+
+
+
 }
