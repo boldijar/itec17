@@ -58,7 +58,7 @@ public class MyLocationService extends Service {
     */
 
     LocationListener[] mLocationListeners = new LocationListener[]{
-            new LocationListener(LocationManager.PASSIVE_PROVIDER)
+            new LocationListener(LocationManager.GPS_PROVIDER)
     };
 
     @Override
@@ -82,7 +82,7 @@ public class MyLocationService extends Service {
 
         try {
             mLocationManager.requestLocationUpdates(
-                    LocationManager.PASSIVE_PROVIDER,
+                    LocationManager.GPS_PROVIDER,
                     LOCATION_INTERVAL,
                     LOCATION_DISTANCE,
                     mLocationListeners[0]
