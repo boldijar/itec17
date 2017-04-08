@@ -4,7 +4,6 @@ import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -57,6 +56,12 @@ public class StatisticsFragment extends BaseFragment {
         //generateLocations();
         initChart();
         initPieChart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+       getActivity().setTitle("Your stats");
     }
 
     @Nullable
