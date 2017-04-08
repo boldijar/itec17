@@ -1,5 +1,6 @@
 package com.bolnizar.code.pages.statistics;
 
+import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -40,15 +41,20 @@ public class StatisticsFragment extends BaseFragment {
     BarView barView;
     @BindView(R.id.pie_view)
     PieView mPieView;
+    @BindView(R.id.avg_speed_label)
+    TextView avgLabel;
+    @BindView(R.id.max_speed_label)
+    TextView maxLabel;
     ArrayList<String> hours = new ArrayList<>();
-    ArrayList<Integer> activity = new ArrayList<>();
     @BindView(R.id.meters_walked_label)
     TextView distanceLabel;
+    int maximumWalked = 0;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
+        //generateLocations();
         initChart();
         initPieChart();
     }
@@ -64,6 +70,8 @@ public class StatisticsFragment extends BaseFragment {
         calendar.add(Calendar.HOUR, -24);
         long check = calendar.getTimeInMillis();
         long totalDistance = 0;
+        float totalSpeed = 0;
+        float maxSpeed = 0;
 
         List<PositionRecord> results = PositionRecord.find(PositionRecord.class
                 , "time >= ?"
@@ -98,16 +106,26 @@ public class StatisticsFragment extends BaseFragment {
                 Integer distance = (int) distance(activity.get(hour), positionRecord.toLatLng());
                 activityPerHour.put(hour, distance);
                 Log.i("HOUR: ", String.valueOf(hour) + " " + distance);
-                totalDistance+= distance;
+                if(distance > maximumWalked){
+                    maximumWalked = (int)distance;
+                }
+                totalDistance += distance;
+                totalSpeed += positionRecord.speed;
+                if (positionRecord.speed > maxSpeed) {
+                    maxSpeed = positionRecord.speed;
+                }
             }
+            Log.i("SPEED AVG: ", "" + totalSpeed / (float)activity.size());
+            Log.i("MAX SPEED: ", "" + maxSpeed);
 
+            initLabels(totalSpeed / activity.size(), maxSpeed);
             activity.put(hour, positionRecord.toLatLng());
         }
 
 
         barView.setBottomTextList(hours);
-        barView.setDataList(new ArrayList<Integer>(activityPerHour.values()), 10000000);
-        distanceLabel.setText("You walked " + String.valueOf(totalDistance)+ " meters today!");
+        barView.setDataList(new ArrayList<Integer>(activityPerHour.values()), maximumWalked);
+        distanceLabel.setText("You walked " + String.valueOf(totalDistance) + " meters today!");
 
     }
 
@@ -126,13 +144,43 @@ public class StatisticsFragment extends BaseFragment {
         mPieView.showPercentLabel(true); //optional
     }
 
+    private void initLabels(float avg, float max) {
+        ValueAnimator animator = new ValueAnimator();
+        animator.setObjectValues(0, (int) avg);
+        animator.setDuration(1500);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            public void onAnimationUpdate(ValueAnimator animation) {
+                avgLabel.setText("" + animation.getAnimatedValue() + "km/h");
+            }
+        });
+        animator.start();
+
+        ValueAnimator animator2 = new ValueAnimator();
+        animator2.setObjectValues(0, (int) max);
+        animator2.setDuration(1500);
+        animator2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            public void onAnimationUpdate(ValueAnimator animation) {
+                maxLabel.setText("" + animation.getAnimatedValue() + "km/h");
+            }
+        });
+        animator2.start();
+    }
+
+
+    private float distance(LatLng pos1, LatLng pos2) {
+        float[] result = new float[10];
+        Location.distanceBetween(pos1.latitude, pos1.longitude,
+                pos2.latitude, pos2.longitude, result);
+        return result[0];
+    }
+
     private void generateLocations() {
         Random random = new Random();
         Calendar calendar = Calendar.getInstance();
         double longitude = 45.741d;
         double latitude = 21.237d;
-        float speed = 0;
         for (int i = 0; i < 100; i++) {
+            float speed =(float) Math.abs(random.nextInt()) % 120;
             calendar.add(Calendar.HOUR, random.nextInt() % 24);
             Log.i("GENERATED HOUR: ", String.valueOf(calendar.getTimeInMillis()));
             longitude += random.nextDouble();
@@ -144,13 +192,5 @@ public class StatisticsFragment extends BaseFragment {
             positionRecord.save();
         }
     }
-
-    private float distance(LatLng pos1, LatLng pos2) {
-        float[] result = new float[10];
-        Location.distanceBetween(pos1.latitude, pos1.longitude,
-                pos2.latitude, pos2.longitude, result);
-        return result[0];
-    }
-
 
 }
