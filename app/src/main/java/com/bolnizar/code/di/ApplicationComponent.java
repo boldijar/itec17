@@ -6,6 +6,7 @@ import com.bolnizar.code.data.prefs.AppPrefsConstants;
 import com.bolnizar.code.data.prefs.AppPrefsModule;
 import com.bolnizar.code.data.prefs.StringPreference;
 import com.bolnizar.code.di.scopes.ApplicationScope;
+import com.bolnizar.code.pages.map.MapActivity;
 import com.bolnizar.code.utils.SystemUtils;
 
 import javax.inject.Named;
@@ -25,4 +26,9 @@ public interface ApplicationComponent {
 
     @Named(AppPrefsConstants.USER_TOKEN)
     StringPreference provideUserToken();
+
+    @Named(AppPrefsConstants.FACEBOOK_ID)
+    StringPreference provideFbId();
+
+    void inject(MapActivity mapActivity);
 }
