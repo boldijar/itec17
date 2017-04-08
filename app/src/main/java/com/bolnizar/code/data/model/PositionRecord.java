@@ -9,11 +9,13 @@ public class PositionRecord extends SugarRecord {
     public long time;
     public double latitude;
     public double longitude;
+    public float speed;
 
-    public static PositionRecord newPosition(double latitude, double longitude) {
+    public static PositionRecord newPosition(double latitude, double longitude, float speed) {
         PositionRecord positionRecord = new PositionRecord();
         positionRecord.time = System.currentTimeMillis();
         positionRecord.latitude = latitude;
+        positionRecord.speed = speed;
         positionRecord.longitude = longitude;
         return positionRecord;
     }

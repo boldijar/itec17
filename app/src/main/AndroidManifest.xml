@@ -47,6 +47,11 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyDPIl1e_JPIUIZ3bWXgww2UmBrEuIXjL6s" />
+
+        <service
+            android:name=".pages.map.MyLocationService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>
