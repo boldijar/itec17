@@ -1,6 +1,7 @@
 package com.bolnizar.code.pages.map;
 
 import com.bolnizar.code.R;
+import com.bolnizar.code.pages.statistics.StatisticsFragment;
 import com.bolnizar.code.view.activities.BaseFragmentActivity;
 
 import android.os.Bundle;
@@ -29,7 +30,7 @@ public class MapActivity extends BaseFragmentActivity {
         setSupportActionBar(mToolbar);
 
         initDrawer();
-        switchFragment(new PathsMapFragment());
+        switchFragment(new StatisticsFragment());
     }
 
     private void initDrawer() {
