@@ -30,11 +30,13 @@ import android.widget.Toast;
 
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MapActivity extends BaseFragmentActivity {
+public class MapActivity extends BaseFragmentActivity implements AppMapView {
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -47,6 +49,9 @@ public class MapActivity extends BaseFragmentActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private CallbackManager mCallbackManager;
 
+    @Inject
+    MapPresenter mMapPresenter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,16 +63,21 @@ public class MapActivity extends BaseFragmentActivity {
         initDrawer();
         switchFragment(new PathsMapFragment());
         initFb();
+        mMapPresenter.init(this, this);
+
     }
 
     private void initFb() {
         if (AccessToken.getCurrentAccessToken() != null) {
             mLoginText.setText(R.string.fb_logout);
             if (Profile.getCurrentProfile() != null) {
+                mImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 Glide.with(this).load("http://graph.facebook.com/" + Profile.getCurrentProfile().getId() + "/picture?width=9999").into(mImage);
             }
         } else {
             mLoginText.setText(R.string.login_with_facebook);
+            mImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            mImage.setImageResource(R.drawable.user);
         }
         mCallbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(mCallbackManager,
@@ -96,6 +106,7 @@ public class MapActivity extends BaseFragmentActivity {
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                 this.stopTracking();
                 Profile.setCurrentProfile(currentProfile);
+                mImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 Glide.with(MapActivity.this).load("http://graph.facebook.com/" + Profile.getCurrentProfile().getId() + "/picture?width=9999").into(mImage);
             }
         };
@@ -107,6 +118,7 @@ public class MapActivity extends BaseFragmentActivity {
         LoginManager.getInstance().logOut();
         mLoginText.setText(R.string.login_with_facebook);
         mImage.setImageResource(R.drawable.user);
+        mImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
     }
 
     @OnClick(R.id.map_login)
@@ -184,6 +196,12 @@ public class MapActivity extends BaseFragmentActivity {
             return;
         }
         switchFragment(new GalleryFragment());
+    }
+
+    @Override
+    protected void onDestroy() {
+        mMapPresenter.destroy();
+        super.onDestroy();
     }
 
     protected Fragment getTopFragment() {

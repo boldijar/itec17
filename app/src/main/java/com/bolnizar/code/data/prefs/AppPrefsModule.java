@@ -31,8 +31,8 @@ public class AppPrefsModule {
 
     @Provides
     @ApplicationScope
-    @Named(AppPrefsConstants.FACEBOOK_ID)
-    StringPreference provideFbId(@AppPrefs SharedPreferences sharedPreferences) {
-        return new StringPreference(sharedPreferences, AppPrefsConstants.FACEBOOK_ID);
+    @Named(AppPrefsConstants.LAST_SYNC_ID)
+    LongPreference provideLastSync(@AppPrefs SharedPreferences sharedPreferences) {
+        return new LongPreference(sharedPreferences, AppPrefsConstants.LAST_SYNC_ID);
     }
 }

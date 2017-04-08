@@ -1,14 +1,16 @@
 package com.bolnizar.code.di;
 
+import com.bolnizar.code.ShaormApp;
+import com.bolnizar.code.di.scopes.ApplicationScope;
+import com.bolnizar.code.pages.map.BackendService;
+import com.bolnizar.code.utils.SystemUtils;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 
-import com.bolnizar.code.ShaormApp;
-import com.bolnizar.code.di.scopes.ApplicationScope;
-import com.bolnizar.code.utils.SystemUtils;
-
 import dagger.Module;
 import dagger.Provides;
+import retrofit2.Retrofit;
 
 @Module
 public class ApplicationModule {
@@ -35,6 +37,12 @@ public class ApplicationModule {
     @ApplicationScope
     SystemUtils provideSystemUtils(ConnectivityManager connectivityManager) {
         return new SystemUtils(connectivityManager);
+    }
+
+    @Provides
+    @ApplicationScope
+    BackendService provideBackend(Retrofit retrofit) {
+        return retrofit.create(BackendService.class);
     }
 
 }

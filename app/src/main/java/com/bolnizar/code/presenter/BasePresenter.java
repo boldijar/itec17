@@ -8,7 +8,7 @@ public abstract class BasePresenter<T> {
     private T mView;
     private CompositeSubscription mCompositeSubscription;
 
-    public final void init(T view) {
+    public void init(T view) {
         mView = view;
         mCompositeSubscription = new CompositeSubscription();
     }
